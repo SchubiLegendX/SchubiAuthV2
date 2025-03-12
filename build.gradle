@@ -1,0 +1,78 @@
+buildscript {
+    repositories {
+
+        maven { url "https://maven.minecraftforge.net" }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT"
+    }
+}
+
+plugins {
+    id "java"
+    id "com.github.johnrengelman.shadow" version "2.0.4"
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+
+version = "2.0"
+group = "schubilegend.dev"
+archivesBaseName = "SchubiAuth"
+
+sourceCompatibility = targetCompatibility = 1.8
+compileJava.options.encoding = "UTF-8"
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_22"
+    makeObfSourceJar = false
+}
+
+configurations {
+    shade
+    compile.extendsFrom(shade)
+}
+
+repositories {
+
+}
+
+dependencies {
+
+}
+
+processResources {
+
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+
+
+        expand "version":project.version, "mcversion":project.minecraft.version
+    }
+
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+shadowJar {
+    dependencies {
+
+    }
+    configurations = [project.configurations.shade]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    classifier ""
+}
+
+reobf {
+
+    shadowJar {}
+}
